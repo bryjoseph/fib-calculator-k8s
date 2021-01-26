@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec: 
+  replicas: 1
+  selector:
+    matchLabels: 
+      component: postgres # must match
+  template:
+    metadata:
+      labels:
+        component: postgres # must match
+    spec:
+      volumes: # using a PVC config to setup postgres on local machine
+        - name: postgres-storage # must match volumeMount
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim # matches PVC name
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432 # default port
+          volumeMounts:
+            - name: postgres-storage # must match spec volumes entry
+              mountPath: /var/lib/postgresql/data # data directory postgres will use (default)
+              subPath: postgres # this is special to postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

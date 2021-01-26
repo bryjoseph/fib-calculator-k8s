@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec: 
+  replicas: 3
+  selector:
+    matchLabels: 
+      component: server # must match
+  template:
+    metadata:
+      labels:
+        component: server # must match
+    spec:
+      containers:
+        - name: server
+          image: bryjos44/fibcalculator-api
+          ports:
+            - containerPort: 5000
+          env: 
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service # the name value of the Cluster IP Service
+            - name: REDIS_PORT
+              value: '6379' # default redis port # must be string not INT for env var
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: postgres-cluster-ip-service # the name value of the Cluster IP Service
+            - name: PGPORT
+              value: '5432' # deault # must be string not INT for env var
+            - name: PGDATABASE
+              value: postgres
+            - name: PGPASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

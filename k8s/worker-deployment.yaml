@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec: 
+  replicas: 1
+  selector:
+    matchLabels: 
+      component: worker # must match
+  template:
+    metadata:
+      labels:
+        component: worker # must match
+    spec:
+      containers:
+        - name: worker
+          image: bryjos44/fibcalculator-worker
+          env: 
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service # the name value of the IP Service
+            - name: REDIS_PORT
+              value: '6379' # default redis port # must be string not INT for env var
+          # no ports nec. because no other pod reqs access
