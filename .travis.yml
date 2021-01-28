@@ -1,0 +1,44 @@
+# sudo: required
+# service:
+#   - docker
+# env:
+  # global:
+    # - GIT_SHA=$(git rev-parse HEAD)
+    # - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+# before_install:
+#   - openssl <encrpted file here> # which doesn't exist
+#   - curl https://sdk.cloud.google.com | bash > /dev/null; # downloads Google Cloud SDK
+#   - source $HOME/google-cloud-sdk/path.bash.inc # modify shell to include SDK
+#   - gcloud components update kubectl # adding kubectl to env
+#   - gcloud auth activate-service-account --key-file service-account.json # auth with gcloud similar to an IAM account
+  
+  # have not and will not create any of these steps
+  # step 1: create service account on GoogleCloudPlatform # kubernetes engine admin role
+  # step 2: download .json from GCP
+    # 2a: download and install TravisCLI to encrypt GCP.json admin role file
+      # 2b: (TravisCLI requires Ruby -__-) used a container
+        # 2c: docker run -it -v ${pwd}:/app ruby:2.4 sh <--start a shell in container
+        # 2d: gem install travis
+        # 2e: travis login
+        # 2f: COPY .json file into container directory
+        # 2g: travis encrypt-file service-account.json
+          # 2h: must login to Travis
+            # 2i: must create a github-token to pass to Travis login
+        # 2j: run encrpt command: travis encrpt-file service-account.json -r ######/fib-calculator-k8s (must specify a repo)
+          # 2k: add the encrypted file to github repo listed in previous step (.enc)
+          # 2l: delete original unencrypted .json file
+            # 2m: commit encrypted file to github repo for TravisCI
+  
+  # - gcloud config set project fib-calculator-k8s-302919 # <use GCP ID not simple project name>
+  # - gcloud config set compute/zone us-central1-c
+  # - gloud container clusters get-credentials multi-cluster # does not exist
+  # login into to DockerCLI
+  # - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin # doesn't exist for this travis repo
+  # - docker build -t bryjos44/react-test -f ./client/Dockerfile.dev ./client
+# script:
+  # - docker run -e CI=true bryjos44/react-test npm test
+# deploy:
+  # provider: script # cannot use elasticbeanstalk because TravisCI does not have a provider configured
+  # script: bash ./deploy.sh # this is a custom deployment script
+  # on:
+    # branch: master
