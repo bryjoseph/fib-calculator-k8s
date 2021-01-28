@@ -1,0 +1,20 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: k8s-multi-com-tls
+spec: 
+  secretName: k8s-multi-com
+  issuerRef: 
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: k8s-multi.com # data goes on cert
+  dnsNames: # all of the names the cert will be valid for
+    - k8s-multi.com # dns name
+    - www.k8s-multi.com # www version
+  acme: 
+    config:
+      - http01:
+          ingressClass: nginx
+        domains: # the domains the verification process will attempt to access
+          - k8s-multi.com
+          - www.k8s-multi.com
